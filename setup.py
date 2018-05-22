@@ -3,10 +3,10 @@ from setuptools import setup, find_packages
 
 
 setup(name='cLoops',
-    version='0.91',
+    version='0.10',
     author='Yaqiang Cao',
     author_email='caoyaqiang@picb.ac.cn',
-    url='https://github.com/YaqiangCao/cLoops',
+    url='https://github.com/nefclan/cLoops',
     description='Loops calling for ChIA-PET,HiChIP and Hi-C data. Can be applied to similar datasets.',
     classifiers=[
         'Environment :: Console',
@@ -23,8 +23,7 @@ setup(name='cLoops',
             'cLoops=cLoops.pipe:main',
                 ],
         },
-    #scripts = ["scripts/deLoops","scripts/jd2juice","scripts/jd2washU","scripts/jd2saturation","scripts/jd2fingerprint"],
     #temply disable deLoops for furthur development
-    scripts = ["scripts/jd2juice","scripts/jd2washU","scripts/jd2saturation","scripts/jd2fingerprint","scripts/callStripes"],
+    scripts = ["scripts/callStrips","scripts/pet2fingerprint","scripts/pet2juice","scripts/pet2washU"],
 
     )

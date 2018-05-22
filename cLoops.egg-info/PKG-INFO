@@ -1,11 +1,12 @@
 Metadata-Version: 1.1
 Name: cLoops
-Version: 0.91
+Version: 0.10
 Summary: Loops calling for ChIA-PET,HiChIP and Hi-C data. Can be applied to similar datasets.
-Home-page: https://github.com/YaqiangCao/cLoops
+Home-page: https://github.com/nefclan/cLoops
 Author: Yaqiang Cao
 Author-email: caoyaqiang@picb.ac.cn
 License: UNKNOWN
+Description-Content-Type: UNKNOWN
 Description: # cLoops: loops calling for ChIA-PET, Hi-C and HiChIP
         ![](https://github.com/YaqiangCao/cLoops/raw/master/pngs/cLoops.png)
         

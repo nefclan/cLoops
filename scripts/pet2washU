@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.7
 #--coding:utf-8 --
 """
-jd2washU
+pet2washU
 2017-08-10
 """
 __date__ = "2017-08-10"
@@ -17,10 +17,9 @@ import numpy as np
 import joblib
 
 #cLoops
-from cLoops.io import jd2washU
-from cLoops.utils import jd2washUHelp
+from cLoops.io import pet2washU
+from cLoops.utils import pet2washUHelp
 
 if __name__ == "__main__":
-    op = jd2washUHelp()
-    fs = glob(os.path.join(op.dir, "*.jd"))
-    jd2washU(fs, op.output + "_PETs_washU.txt", op.cut, op.ext)
+    op = pet2washUHelp()
+    pet2washU(op.input, op.output + "_PETs_washU.txt", op.cut, op.ext, op.strict_intra_flag)

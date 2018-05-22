@@ -24,16 +24,16 @@ from joblib import Parallel, delayed
 
 #cLoops
 from cLoops.utils import getLogger, cFlush, deloopHelp
-from cLoops.io import parseIv
+from cLoops.io import readPet, parseIv
 from cLoops.cModel import getGenomeCoverage, getCounts, getNearbyPairRegions, getPETsforRegions, getBonPvalues
 
 #global settings
 global logger
 
 
-def preDs(f, d, chroms=[], ivac=6, ivbc=7):
+def preDs(f, h5file, chroms=[], ivac=6, ivbc=7):
     """
-    Prepare input datasets, f is the .loop file and d is the directory contains parsed cis-PETs.
+    Prepare input datasets, f is the .loop file and h5file is .pet file contain parsed PETs.
     """
     records = {}  #organized by chromosomes.
     if len(chroms) > 0:
@@ -48,7 +48,7 @@ def preDs(f, d, chroms=[], ivac=6, ivbc=7):
             continue
         iva = parseIv(line[ivac])
         ivb = parseIv(line[ivbc])
-        if len(chroms) > 0 and iva[0] not in chroms:
+        if len(chroms) > 0 and iva[0] not in chroms and ivb[0] not in chroms:
             continue
         if iva[0] not in records:
             records[iva[0]] = {"rs": {}, "f": ""}

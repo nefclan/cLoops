@@ -1,3 +1,4 @@
+README.md
 setup.py
 cLoops/__init__.py
 cLoops/bk.py
@@ -5,6 +6,8 @@ cLoops/cDBSCAN.py
 cLoops/cDBSCAN2.py
 cLoops/cModel.py
 cLoops/cPlots.py
+cLoops/callLoops.py
+cLoops/deLoops.py
 cLoops/ests.py
 cLoops/io.py
 cLoops/pipe.py
@@ -15,9 +18,7 @@ cLoops.egg-info/SOURCES.txt
 cLoops.egg-info/dependency_links.txt
 cLoops.egg-info/entry_points.txt
 cLoops.egg-info/top_level.txt
-scripts/callStripes
-scripts/deLoops
-scripts/jd2fingerprint
-scripts/jd2juice
-scripts/jd2saturation
-scripts/jd2washU
+scripts/callStrips
+scripts/pet2fingerprint
+scripts/pet2juice
+scripts/pet2washU

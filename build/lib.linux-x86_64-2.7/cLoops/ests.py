@@ -48,13 +48,15 @@ def estIntSelCutFrag(di, ds, log=1):
     if log:
         di = np.log2(di)
         ds = np.log2(ds)
+    if len(di) == 0 or len(ds) == 0:
+        return 0, 0
     #self-ligantion and inter-ligation distance cutoff
     #cut = ds.mean() + 3 * ds.std()
     cut1 = np.median(ds) + 3 * ds.std()
     cut2 = (ds.mean() * ds.std() + di.mean() * di.std()) / (
         ds.std() + di.std())
     cut = min([cut1, cut2])
-    rcut = int(2**cut)
+    rcut = int(2 ** cut)
     #fragment size
     frags = np.median(ds)
     rfrags = int(2**frags)

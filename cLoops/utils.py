@@ -119,7 +119,7 @@ def mainHelp():
         dest="anchor_ratio",
         default=1,
         help=
-        "Loop anchors width ratio for assymmetric data. For Grid-seq data in RNA-DNA format (RNA end is first in a line of bedpe file), set ratio less than 1 to get wider anchor in DNA. For symmetrical data (without -assymmetric set) use callStrips instead. Parameters could be int, float or fraction (4/5). Default: 1."
+        "Loop anchors width ratio for assymmetric data. For Grid-seq data in RNA-DNA format (RNA end is first in a line of bedpe file), set ratio less than 1 to get wider anchor in DNA. For symmetrical data (without -assymmetric set) use callStripes instead. Parameters could be int, float or fraction (4/5). Default: 1."
     )
     parser.add_argument(
         "-p",
@@ -440,7 +440,7 @@ def pet2fingerprintHelp():
     return op
 
 
-def callStripsHelp():
+def callStripesHelp():
     """
     Create the command line interface for the script of callStripes.
     """

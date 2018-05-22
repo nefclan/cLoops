@@ -1,8 +1,8 @@
 #!/usr/bin/env python2.7
 #--coding:utf-8 --
 """
-2017-07-20: loops2juice added
-2017-08-02: re-design the datastructure
+cLoops.io.py 
+2018-05-22: re-design the data structure, all based on HDF5 now. 
 """
 
 __author__ = "CAO Yaqiang"
@@ -423,9 +423,9 @@ def loops2juice(fin, fout, logger, significant=1):
         "Converting %s to Juicebox 2D annotation feature finished." % fin)
 
 
-def strips2juice(fin, fout, logger, significant=1):
+def stripes2juice(fin, fout, logger, significant=1):
     """
-    Convert interaction level strip file to Juicebox 2D annotation features. 
+    Convert interaction level stripe file to Juicebox 2D annotation features. 
     The txt file format according to https://github.com/theaidenlab/juicebox/wiki/Loading-Annotations-(Annotations-menu)
     @param fin: interactions in loop file
     @param fout: juicebox long-range interaction text file prefix
@@ -442,7 +442,7 @@ def strips2juice(fin, fout, logger, significant=1):
         "y2",
         "color",
         "observed",
-        "stripId",
+        "stripeId",
         "FDR",
         "EnrichmentScore",
         "EnrichmentScore_X",

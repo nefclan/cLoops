@@ -390,7 +390,7 @@ def markIntSigHic(ds, escut=2.0, fdrcut=0.01, bpcut=1e-5, ppcut=1e-5):
     return ds
 
 
-def markStripSig(ds, escut=2.0, fdrcut=0.1, ppcut=1e-5, es_cut=0.2):
+def markStripeSig(ds, escut=2.0, fdrcut=0.1, ppcut=1e-5, es_cut=0.2):
     """
     """
     #filter data according to cutoffs
@@ -419,7 +419,7 @@ def markStripSig(ds, escut=2.0, fdrcut=0.1, ppcut=1e-5, es_cut=0.2):
     return ds
 
 
-def getNearbyPairRegionsForStrips(iva, ivb, win=5):
+def getNearbyPairRegionsForStripes(iva, ivb, win=5):
     """
     @param iva: [start,end] 
     """
@@ -454,13 +454,13 @@ def getNearbyPairRegionsForStrips(iva, ivb, win=5):
         return ivas, ivbs
 
 
-def getStripPsFdr(iva, ivb, model, N, win=5, triangular_flag=True):
+def getStripePsFdr(iva, ivb, model, N, win=5, triangular_flag=True):
     """
     for the interval a and b, searching its nearby windows to estimate FDR and p-values.  
     return ra, rb, rab, es, es_ra,es_rb, fdr, pop, nbp
     """
     ra, rb, rab = getPETsforRegions(iva, ivb, model, triangular_flag)
-    ivas, ivbs = getNearbyPairRegionsForStrips(iva, ivb, win=win)
+    ivas, ivbs = getNearbyPairRegionsForStripes(iva, ivb, win=win)
     #nras is a list for storing points ids for permutated regions
     nras, nrbs = [], []
     for na in ivas:
@@ -516,7 +516,7 @@ def getStripPsFdr(iva, ivb, model, N, win=5, triangular_flag=True):
     return ra, rb, rab, es, rab / float(ra), rab / float(rb), fdr, pop, nbp
 
 
-def getStripSig(petfile, petclass, records):
+def getStripeSig(petfile, petclass, records):
     """
     """
     print "Starting estimate significance for %s candidate interactions in %s" % (
@@ -542,7 +542,7 @@ def getStripSig(petfile, petclass, records):
         ra, rb, rab = getPETsforRegions(iva, ivb, model, triangular_flag)
         if i % 100 == 0:
             cFlush("%s interaction p-values estimated for %s" % (i, petclass))
-        ra, rb, rab, es, es_ra, es_rb, fdr, pop, nbp = getStripPsFdr(
+        ra, rb, rab, es, es_ra, es_rb, fdr, pop, nbp = getStripePsFdr(
             iva, ivb, model, N, 5, triangular_flag)
         #this part should be furthur modified, as for most ideable data, there are no noise, so the es should be inf, however, not possible
         ds[key] = {

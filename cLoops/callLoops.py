@@ -29,11 +29,9 @@ def singleDBSCAN(petfile,
                  cut=0,
                  strict_intra=True,
                  anchor_ratio=1):
-                 anchor_ratio=1):
     """
     Run DBSCAN to detect interactions for one chromosome.
     mat is list, every item is [ pointId,x,y ]
-    @para anchor_ratio: Loop anchors width ratio for assymmetric data
     @para anchor_ratio: Loop anchors width ratio for assymmetric data
     """
     logger = getLogger(logfile_name)
@@ -53,21 +51,14 @@ def singleDBSCAN(petfile,
         petclass, eps, minPts, cut)
     logger.info(report)
     anchor_ratio = Fraction(anchor_ratio)
-    anchor_ratio = Fraction(anchor_ratio)
     coor_factor = [1, 1]
     if anchor_ratio > 1:
-    if anchor_ratio > 1:
         anchor_ratio = anchor_ratio.limit_denominator(1000)
-        anchor_ratio = anchor_ratio.limit_denominator(1000)
-        coor_factor = [anchor_ratio.denominator, anchor_ratio.numerator]
         coor_factor = [anchor_ratio.denominator, anchor_ratio.numerator]
         mat[:, 1:3] = mat[:, 1:3] * coor_factor
         eps = eps * max(coor_factor)
     elif anchor_ratio < 1:
-    elif anchor_ratio < 1:
         anchor_ratio = (1 / anchor_ratio).limit_denominator(1000)
-        anchor_ratio = (1 / anchor_ratio).limit_denominator(1000)
-        coor_factor = [anchor_ratio.numerator, anchor_ratio.denominator]
         coor_factor = [anchor_ratio.numerator, anchor_ratio.denominator]
         mat[:, 1:3] = mat[:, 1:3] * coor_factor
         eps = eps * max(coor_factor)
@@ -124,13 +115,11 @@ def runDBSCAN(petfile,
               cpu=1,
               strict_intra=True,
               anchor_ratio=1):
-              anchor_ratio=1):
     """
     Run DBSCAN to detect interactions for all chromosomes.
     """
     ds = Parallel(n_jobs=cpu)(delayed(
         singleDBSCAN)(petfile, petclass, eps, minPts, logfile_name, cut,
-                      strict_intra, anchor_ratio) for petclass in total_petclass)
                       strict_intra, anchor_ratio) for petclass in total_petclass)
     dataI, dataS, dis, dss = {}, [], [], []
     for d in ds:
@@ -200,7 +189,6 @@ def callLoops(petfile,
               strict_intra=True,
               symmetrical=True,
               anchor_ratio=1,
-              anchor_ratio=1,
               logfile_name='',
               plot=0,
               cpu=1,
@@ -222,7 +210,6 @@ def callLoops(petfile,
         for m in minPts:
             dataI_2, dataS_2, dis_2, dss_2 = runDBSCAN(
                 petfile, total_petclass, ep, m, logfile_name, cut, cpu,
-                strict_intra, anchor_ratio)
                 strict_intra, anchor_ratio)
             if len(dataI_2) == 0:
                 logger.info(

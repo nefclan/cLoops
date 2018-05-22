@@ -1,8 +1,8 @@
 #!/usr/bin/env python2.7
 #--coding:utf-8 --
 """
-2017-07-20: loops2juice added
-2017-08-02: re-design the datastructure
+cLoops.io.py 
+2018-05-22: re-design the data structure, all based on HDF5 now. 
 """
 
 __author__ = "CAO Yaqiang"

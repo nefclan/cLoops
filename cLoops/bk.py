@@ -1,3 +1,7 @@
+"""
+bk.py
+2018-05-22: backup code 
+"""
 def checkOneEndOverlap(xa, xb, ya, yb):
     """
     check the overlap of a region for the same chromosome

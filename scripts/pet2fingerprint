@@ -75,8 +75,8 @@ def pet2FingerPrint(petfile, binSize=2000, cpu=10, bins=100):
     h5fh = h5py.File(petfile, 'r')
     h5pet_group = h5fh['pets'].keys()
     h5fh.close()
-    ds = Parallel(n_jobs=cpu)(delayed(pet2contactMatrixUpper)(petfile,
-            petclass, binSize) for petclass in h5pet_group)
+    ds = Parallel(n_jobs=cpu)(delayed(pet2contactMatrixUpper)(
+        petfile, petclass, binSize) for petclass in h5pet_group)
     cis_ds = []
     trans_ds = []
     for i in xrange(len(h5pet_group)):
@@ -94,11 +94,16 @@ def pet2FingerPrint(petfile, binSize=2000, cpu=10, bins=100):
     return cis_nn, trans_nn
 
 
-def getFingerPrint(petfiles, labels, fout, binSize=2000, cpu=10, plot=1, bins=100):
+def getFingerPrint(petfiles,
+                   labels,
+                   fout,
+                   binSize=2000,
+                   cpu=10,
+                   plot=1,
+                   bins=100):
     petfiles = petfiles.split(",")
     if labels != "" and len(petfiles) != len(labels.split(",")):
-        logger.error(
-            "Numbers of files and labels are not equal! Return.")
+        logger.error("Numbers of files and labels are not equal! Return.")
         return
     if labels != "":
         labels = labels.split(",")
@@ -110,11 +115,8 @@ def getFingerPrint(petfiles, labels, fout, binSize=2000, cpu=10, plot=1, bins=10
         logger.info("Getting finger print for %s" % petfiles[i])
         nlabel = petfiles[i].split("/")[-1]
         cis_nn, trans_nn = pet2FingerPrint(
-            petfiles[i],
-            binSize=binSize,
-            cpu=cpu,
-            bins=bins)
-        if labels !="" and labels[i] != "":
+            petfiles[i], binSize=binSize, cpu=cpu, bins=bins)
+        if labels != "" and labels[i] != "":
             nlabel = labels[i]
         if len(trans_nn) == 0:
             data[nlabel] = cis_nn

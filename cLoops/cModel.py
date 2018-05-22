@@ -173,7 +173,6 @@ def getMultiplePsFdr(iva, ivb, model, N, win=5, triangular_flag=True):
     return ra, rb, rab, es, fdr, hyp, pop, nbp
 
 
-
 def getBonPvalues(ps):
     """
     Return the Bonferroni corrected p-values.
@@ -199,8 +198,9 @@ def checkOverlap(ivai, ivbi, strandi, ivaj, ivbj, strandj):
     """
     if strandi != strandj:
         return False
-    if checkOneEndOverlap(ivai[1], ivai[2], ivaj[1], ivaj[2]) and checkOneEndOverlap(
-            ivbi[1], ivbi[2], ivbj[1], ivbj[2]):
+    if checkOneEndOverlap(ivai[1], ivai[2], ivaj[1],
+                          ivaj[2]) and checkOneEndOverlap(
+                              ivbi[1], ivbi[2], ivbj[1], ivbj[2]):
         return True
     return False
 
@@ -243,8 +243,7 @@ def removeDup(ds, bpcut=1e-5):
                 strandj = ds[keyj]["strand"]
             else:
                 strandj = ''
-            if checkOverlap(ivai, ivbi, strandi,
-                ivaj, ivbj, strandj):
+            if checkOverlap(ivai, ivbi, strandi, ivaj, ivbj, strandj):
                 reds.append(keyj)
         if len(reds) == 0:
             uniqueds[keyi] = ds[keyi]
@@ -260,6 +259,7 @@ def removeDup(ds, bpcut=1e-5):
                 else:
                     retable[keyj] = [keyi]
     return uniqueds
+
 
 def removeDup_bak(ds, bpcut=1e-5):
     """
@@ -294,8 +294,7 @@ def removeDup_bak(ds, bpcut=1e-5):
                 strandj = ds[keyj]["strand"]
             else:
                 strandj = ''
-            flagj = checkOverlap(ivai, ivbi, strandi,
-                ivaj, ivbj, strandj)
+            flagj = checkOverlap(ivai, ivbi, strandi, ivaj, ivbj, strandj)
             #there is overlapped loops,collect them
             if flagj:
                 if keyi not in reds:
@@ -335,13 +334,14 @@ def removeDup_bak(ds, bpcut=1e-5):
     return uniqueds
 
 
-
 def getIntSig(petfile, petclass, records, minPts, discut, strict_intra=True):
     """
     @param:discut, distance cutoff determined for self-ligation pets.
     """
-    print "Starting estimate significance for %s candidate interactions in %s" % (len(records), petclass)
-    model, N, intra_flag = getGenomeCoverage(petfile, petclass, discut, strict_intra)
+    print "Starting estimate significance for %s candidate interactions in %s" % (
+        len(records), petclass)
+    model, N, intra_flag = getGenomeCoverage(petfile, petclass, discut,
+                                             strict_intra)
     print "Genomic coverage model built from %s" % petclass
     if N == 0:
         print "No PETs parsed as requiring distance cutoff >%s from %s" % (
@@ -352,7 +352,8 @@ def getIntSig(petfile, petclass, records, minPts, discut, strict_intra=True):
     petclass_key = petclass.split("_")
     para = getPetFilePara(petfile)
     #determine whether contact matrix is a triangular matrix
-    triangular_flag = para['symmetrical'] and isIntraPetClass(petclass_key, True)
+    triangular_flag = para['symmetrical'] and isIntraPetClass(
+        petclass_key, True)
     for r in records:
         chroms = [r[0], r[3]]
         key = "%s_%s" % (petclass, i)
@@ -462,7 +463,6 @@ def markIntSigHic(ds, escut=2.0, fdrcut=0.01, bpcut=1e-5, ppcut=1e-5):
     return ds
 
 
-
 def markStripSig(ds, escut=2.0, fdrcut=0.1, ppcut=1e-5, es_cut=0.2):
     """
     """
@@ -490,6 +490,7 @@ def markStripSig(ds, escut=2.0, fdrcut=0.1, ppcut=1e-5, es_cut=0.2):
     ns[rs] = 1.0
     ds["significant"] = ns
     return ds
+
 
 def getNearbyPairRegionsForStrips(iva, ivb, win=5):
     """
@@ -524,7 +525,8 @@ def getNearbyPairRegionsForStrips(iva, ivb, win=5):
             ivas.append(niva)
             ivbs.append(ivb)
         return ivas, ivbs
-        
+
+
 def getStripPsFdr(iva, ivb, model, N, win=5, triangular_flag=True):
     """
     for the interval a and b, searching its nearby windows to estimate FDR and p-values.  
@@ -586,10 +588,12 @@ def getStripPsFdr(iva, ivb, model, N, win=5, triangular_flag=True):
     nbp = max([1e-300, binom.sf(rab - 1.0, N - rab, bp)])
     return ra, rb, rab, es, rab / float(ra), rab / float(rb), fdr, pop, nbp
 
+
 def getStripSig(petfile, petclass, records):
     """
     """
-    print "Starting estimate significance for %s candidate interactions in %s" % (len(records), petclass)
+    print "Starting estimate significance for %s candidate interactions in %s" % (
+        len(records), petclass)
     model, N, intra_flag = getGenomeCoverage(petfile, petclass)
     print "Genomic coverage model built from %s" % petclass
     if N == 0:
@@ -601,7 +605,8 @@ def getStripSig(petfile, petclass, records):
     petclass_key = petclass.split("_")
     para = getPetFilePara(petfile)
     #determine whether contact matrix is a triangular matrix
-    triangular_flag = para['symmetrical'] and isIntraPetClass(petclass_key, True)
+    triangular_flag = para['symmetrical'] and isIntraPetClass(
+        petclass_key, True)
     for r in records:
         chroms = [r[0], r[3]]
         key = "%s_%s" % (petclass, i)

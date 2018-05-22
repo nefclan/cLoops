@@ -17,4 +17,5 @@ from cLoops.utils import pet2juiceHelp
 
 if __name__ == "__main__":
     op = pet2juiceHelp()
-    pet2hic(op.input, op.output + "_juice.hic", op.cut, op.org, op.strict_intra_flag)
+    pet2hic(op.input, op.output + "_juice.hic", op.cut, op.org,
+            op.strict_intra_flag)

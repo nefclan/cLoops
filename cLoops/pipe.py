@@ -45,16 +45,17 @@ from cLoops.callLoops import callLoops
 global logger
 
 
-def runStat(petfile, dataI, minPts, cut, strict_intra, cpu, fout, hichip=False):
+def runStat(petfile, dataI, minPts, cut, strict_intra, cpu, fout,
+            hichip=False):
     """
     Calling p-values of interactions for all chromosomes.
     """
     logger.info(
         "Starting estimate significance for interactions using distance cutoff as %s"
         % cut)
-    ds = Parallel(n_jobs=cpu)(delayed(getIntSig)(
-        petfile, dataI[key]["petclass"], dataI[key]["records"], minPts, cut, strict_intra)
-                              for key in dataI.keys())
+    ds = Parallel(n_jobs=cpu)(
+        delayed(getIntSig)(petfile, dataI[key]["petclass"], dataI[key][
+            "records"], minPts, cut, strict_intra) for key in dataI.keys())
     ds = [d for d in ds if d is not None]
     if len(ds) == 0:
         logger.error("Something wrong, no loops found, sorry, bye.")
@@ -87,11 +88,11 @@ def pipe(fs,
          cut=0,
          plot=0,
          strict_intra=True,
-         anchorRatio=1,
+         anchor_ratio=1,
          symmetrical=True,
          cis_only=True,
          use_strand=False,
-         logfilename=''):
+         logfile_name=''):
     if chroms == "":
         chroms = []
     else:
@@ -105,15 +106,35 @@ def pipe(fs,
         return
     #2.read in PETs, collect cis PETs and convert to .jd format, if not assigned eps (eps=0),estimate eps
     if eps == 0:
-        cfs, ds = parseRawBedpe(fs, petfile, chroms, cut, strict_intra, logger,
-                                symmetrical, cis_only, use_strand,
-                                rmRep=True, cal_ds=True)
+        cfs, ds = parseRawBedpe(
+            fs,
+            petfile,
+            chroms,
+            cut,
+            strict_intra,
+            logger,
+            symmetrical,
+            cis_only,
+            use_strand,
+            rmRep=True,
+            cal_ds=True)
     else:
-        cfs, ds = parseRawBedpe(fs, petfile, chroms, cut, strict_intra, logger,
-                                symmetrical, cis_only, use_strand, 
-                                rmRep=False, cal_ds=False)
+        cfs, ds = parseRawBedpe(
+            fs,
+            petfile,
+            chroms,
+            cut,
+            strict_intra,
+            logger,
+            symmetrical,
+            cis_only,
+            use_strand,
+            rmRep=False,
+            cal_ds=False)
     #3. call loops
-    dataI, cut = callLoops(petfile, fout, cfs, eps, minPts, cut, strict_intra, symmetrical, anchorRatio, logfilename, plot, cpu, ds)
+    dataI, cut = callLoops(petfile, fout, cfs, eps, minPts, cut, strict_intra,
+                           symmetrical, anchor_ratio, logfile_name, plot, cpu,
+                           ds)
 
     #4.estimate the significance
     e = runStat(petfile, dataI, minPts, cut, strict_intra, cpu, fout, hic)
@@ -183,22 +204,22 @@ def main():
         eps = [500, 1000, 2000]
         minPts = [5]
         hic = False
-        op.anchorRatio = 1
+        op.anchor_ratio = 1
     if op.mode == 2:
         eps = [1000, 2000, 5000]
         minPts = [5]
         hic = False
-        op.anchorRatio = 1
+        op.anchor_ratio = 1
     if op.mode == 3:
         eps = [5000, 7500, 10000]
-        minPts = [50,40,30,20]
+        minPts = [50, 40, 30, 20]
         hic = True
-        op.anchorRatio = 1
+        op.anchor_ratio = 1
     if op.mode == 4:
         eps = [2500, 5000, 7500, 10000]
-        minPts = [30,20]
+        minPts = [30, 20]
         hic = True
-        op.anchorRatio = 1
+        op.anchor_ratio = 1
     if op.mode == 5:
         eps = [1500]
         minPts = [5]
@@ -206,7 +227,7 @@ def main():
         op.symmetrical_flag = False
         op.cis_only_flag = False
         op.use_strand = [True, False]
-        op.anchorRatio = 0.05
+        op.anchor_ratio = 0.05
     report = "mode:%s\t eps:%s\t minPts:%s\t hic:%s\t" % (op.mode, eps, minPts,
                                                           hic)
     if op.mode in [1, 2, 3, 4]:
@@ -224,8 +245,8 @@ def main():
     pipe(
         op.fnIn.split(","), op.fnOut, eps, minPts, op.chroms, op.cpu, op.tmp,
         hic, op.washU, op.juice, op.cut, op.plot, op.strict_intra_flag,
-        op.anchorRatio, op.symmetrical_flag, op.cis_only_flag,
-        op.use_strand, fn)
+        op.anchor_ratio, op.symmetrical_flag, op.cis_only_flag, op.use_strand,
+        fn)
     usedtime = datetime.now() - start
     r = "cLoops finished. Used CPU time: %s Bye!\n\n\n" % usedtime
     logger.info(r)

@@ -116,7 +116,7 @@ def mainHelp():
     )
     parser.add_argument(
         "-ar",
-        dest="anchorRatio",
+        dest="anchor_ratio",
         default=1,
         help=
         "Loop anchors width ratio for assymmetric data. For Grid-seq data in RNA-DNA format (RNA end is first in a line of bedpe file), set ratio less than 1 to get wider anchor in DNA. For symmetrical data (without -assymmetric set) use callStrips instead. Parameters could be int, float or fraction (4/5). Default: 1."
@@ -185,9 +185,7 @@ def mainHelp():
         dest="strict_intra_flag",
         action='store_false',
         required=False,
-        help=
-        "Set this to also apply -cut filtering to trans strand PETs."
-    )
+        help="Set this to also apply -cut filtering to trans strand PETs.")
     parser.add_argument(
         "-assymmetric",
         dest="symmetrical_flag",
@@ -201,9 +199,7 @@ def mainHelp():
         dest="cis_only_flag",
         action='store_false',
         required=False,
-        help=
-        "Set this to find trans-chromosome loops."
-    )
+        help="Set this to find trans-chromosome loops.")
     parser.add_argument(
         "-useStrand",
         dest="use_strand",
@@ -226,7 +222,8 @@ def mainHelp():
         "-v",
         dest="version",
         action="version",
-        version="cLoops v%s" % __version__, )
+        version="cLoops v%s" % __version__,
+    )
 
     op = parser.parse_args()
     return op
@@ -343,9 +340,7 @@ def pet2washUHelp():
         dest="strict_intra_flag",
         action='store_false',
         required=False,
-        help=
-        "Set this to also apply -cut filtering to trans strand PETs."
-    )
+        help="Set this to also apply -cut filtering to trans strand PETs.")
 
     op = parser.parse_args()
     return op
@@ -388,9 +383,7 @@ def pet2juiceHelp():
         dest="strict_intra_flag",
         action='store_false',
         required=False,
-        help=
-        "Set this to also apply -cut filtering to trans strand PETs."
-    )
+        help="Set this to also apply -cut filtering to trans strand PETs.")
     op = parser.parse_args()
     return op
 
@@ -433,9 +426,7 @@ def pet2fingerprintHelp():
         dest="plot",
         required=False,
         action="store_true",
-        help=
-        "Whether to plot finger print, default is not."
-    )
+        help="Whether to plot finger print, default is not.")
     parser.add_argument(
         "-p",
         dest="cpu",
@@ -447,6 +438,7 @@ def pet2fingerprintHelp():
     )
     op = parser.parse_args()
     return op
+
 
 def callStripsHelp():
     """
@@ -462,8 +454,7 @@ def callStripsHelp():
         dest="input",
         required=True,
         type=str,
-        help=
-        ".pet file used to call strips, created by cLoops with option -s."
+        help=".pet file used to call strips, created by cLoops with option -s."
     )
     parser.add_argument(
         "-o", dest="output", required=True, type=str, help="Output prefix.")
@@ -484,7 +475,7 @@ def callStripsHelp():
     )
     parser.add_argument(
         "-ar",
-        dest="anchorRatio",
+        dest="anchor_ratio",
         default=50,
         help="Extension ratio for anchors in x-axis or y-axis, default is 50.")
     parser.add_argument(

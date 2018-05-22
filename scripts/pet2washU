@@ -22,4 +22,5 @@ from cLoops.utils import pet2washUHelp
 
 if __name__ == "__main__":
     op = pet2washUHelp()
-    pet2washU(op.input, op.output + "_PETs_washU.txt", op.cut, op.ext, op.strict_intra_flag)
+    pet2washU(op.input, op.output + "_PETs_washU.txt", op.cut, op.ext,
+              op.strict_intra_flag)

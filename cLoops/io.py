@@ -61,8 +61,8 @@ class PET(object):
                         self.exchange()
                     #intra-strand interaction
                     #left end is alwasy small than right end
-                    elif (self.strandA == self.strandB and 
-                        self.startA + self.endA > self.startB + self.endB):
+                    elif (self.strandA == self.strandB and
+                          self.startA + self.endA > self.startB + self.endB):
                         self.exchange()
         else:
             self.distance = None
@@ -75,6 +75,7 @@ class PET(object):
         self.endA, self.endB = self.endB, self.endA
         self.strandA, self.strandB = self.strandB, self.strandA
         self.cA, self.cB = self.cB, self.cA
+
 
 def chrOrdered(chrA, chrB):
     #determine which chromosome should be listed ahead
@@ -95,6 +96,7 @@ def chrOrdered(chrA, chrB):
     else:
         return True
 
+
 def isIntraPetClass(petclass_key, strict=True):
     #IntraPet: two ends of pets locate in same chromosome or
     #same strand if param strict set True
@@ -108,9 +110,18 @@ def isIntraPetClass(petclass_key, strict=True):
             return True
     return False
 
-def parseRawBedpe(fs, petfile, cs, cut, strict_intra, logger,
-                  symmetrical=True, cis_only=True, use_strand=False,
-                  rmRep=False, cal_ds=False):
+
+def parseRawBedpe(fs,
+                  petfile,
+                  cs,
+                  cut,
+                  strict_intra,
+                  logger,
+                  symmetrical=True,
+                  cis_only=True,
+                  use_strand=False,
+                  rmRep=False,
+                  cal_ds=False):
     """
     Get the cis-PETs, organized by chromosomes. Input could be mixed PETs in bedpe.gz. Also change read id to numbers.
     @param fs: bedpe files of replicates, could be .bedpe or .bedpe.gz
@@ -127,7 +138,9 @@ def parseRawBedpe(fs, petfile, cs, cut, strict_intra, logger,
         use_strand = (use_strand, use_strand)
     use_strand_num = sum(use_strand)
     if symmetrical and sum(use_strand) == 1:
-        logger.error("Error: symmetrical data could not only use one strand information")
+        logger.error(
+            "Error: symmetrical data could not only use one strand information"
+        )
         return [], []
     #writing chunksize
     chunksize = 100000
@@ -175,15 +188,17 @@ def parseRawBedpe(fs, petfile, cs, cut, strict_intra, logger,
                     continue
             else:
                 #get PETs in required chroms
-                if len(cs) > 0 and (not (pet.chromA in cs) and not (pet.chromB in cs)):
+                if len(cs) > 0 and (not (pet.chromA in cs)
+                                    and not (pet.chromB in cs)):
                     continue
             petclass_key = [pet.chromA, pet.chromB]
-            if use_strand[0]: 
+            if use_strand[0]:
                 petclass_key.append(pet.strandA)
             if use_strand[1]:
                 petclass_key.append(pet.strandB)
             #filtering too close cis PETs
-            if cut > 0 and isIntraPetClass(petclass_key, strict_intra) and pet.distance < cut:
+            if cut > 0 and isIntraPetClass(
+                    petclass_key, strict_intra) and pet.distance < cut:
                 continue
             petclass = '_'.join(petclass_key)
             if petclass not in pet_collection:
@@ -192,7 +207,8 @@ def parseRawBedpe(fs, petfile, cs, cut, strict_intra, logger,
             #remove redundant reads in this petclass
             if rmRep and (pet.cA, pet.cB) in pet_collection[petclass]["r"]:
                 continue
-            pet_collection[petclass]['p'].append([pet_collection[petclass]['c'], pet.cA, pet.cB])
+            pet_collection[petclass]['p'].append(
+                [pet_collection[petclass]['c'], pet.cA, pet.cB])
             pet_collection[petclass]['c'] += 1
             if rmRep:
                 pet_collection[petclass]['r'].add((pet.cA, pet.cB))
@@ -201,13 +217,18 @@ def parseRawBedpe(fs, petfile, cs, cut, strict_intra, logger,
                 chunk = np.array(pet_collection[petclass]['p'])
                 if petclass not in cfs:
                     cfs.append(petclass)
-                    h5pet_group.create_dataset(petclass, shape=chunk.shape,
+                    h5pet_group.create_dataset(
+                        petclass,
+                        shape=chunk.shape,
                         maxshape=(None, chunk.shape[1]),
-                        chunks=chunk.shape, dtype=chunk.dtype)
+                        chunks=chunk.shape,
+                        dtype=chunk.dtype)
                     h5pet_group[petclass][:] = chunk
                 else:
-                    h5pet_group[petclass].resize(pet_collection[petclass]['c'], axis=0)
-                    h5pet_group[petclass][pet_collection[petclass]['c'] - chunksize :] = chunk
+                    h5pet_group[petclass].resize(
+                        pet_collection[petclass]['c'], axis=0)
+                    h5pet_group[petclass][
+                        pet_collection[petclass]['c'] - chunksize:] = chunk
                 pet_collection[petclass]['p'] = []
             if cal_ds and pet.chromA == pet.chromB and pet.strandA != pet.strandB:
                 ds.append(pet.distance)
@@ -217,18 +238,24 @@ def parseRawBedpe(fs, petfile, cs, cut, strict_intra, logger,
             chunk = np.array(pet_collection[petclass]['p'])
             if petclass not in cfs:
                 cfs.append(petclass)
-                h5pet_group.create_dataset(petclass, data = chunk)
+                h5pet_group.create_dataset(petclass, data=chunk)
             else:
-                h5pet_group[petclass].resize(pet_collection[petclass]['c'], axis=0)
-                h5pet_group[petclass][pet_collection[petclass]['c'] - len(chunk) :] = chunk
+                h5pet_group[petclass].resize(
+                    pet_collection[petclass]['c'], axis=0)
+                h5pet_group[petclass][
+                    pet_collection[petclass]['c'] - len(chunk):] = chunk
     h5fh.close()
     del pet_collection
     if cis_only:
-        r = "Totaly %s PETs from %s, in which %s cis PETs" % (i, ",".join(fs), j)
+        r = "Totaly %s PETs from %s, in which %s cis PETs" % (i, ",".join(fs),
+                                                              j)
     else:
-        r = "Totaly %s PETs from %s, in which %s useful PETs" % (i, ",".join(fs), j)
+        r = "Totaly %s PETs from %s, in which %s useful PETs" % (i,
+                                                                 ",".join(fs),
+                                                                 j)
     logger.info(r)
     return cfs, ds
+
 
 def getPetFilePara(fh):
     close_flag = False
@@ -243,6 +270,7 @@ def getPetFilePara(fh):
         fh.close()
     return parameters
 
+
 def getPetFileStrandSymbol(fh):
     close_flag = False
     if not isinstance(fh, h5py._hl.files.File):
@@ -253,10 +281,11 @@ def getPetFileStrandSymbol(fh):
     for petclass in p_group.keys():
         strand_keys = petclass.split('_')[2:]
         for strand in strand_keys:
-            strand_symbol.add(strand.encode('ascii','ignore'))
+            strand_symbol.add(strand.encode('ascii', 'ignore'))
     if close_flag:
         fh.close()
     return strand_symbol
+
 
 def readPets(petfile, petclass, cut=0, strict_intra=True):
     """
@@ -273,6 +302,7 @@ def readPets(petfile, petclass, cut=0, strict_intra=True):
     h5fh.close()
     return key, mat, intra_flag
 
+
 def parseIv(iv):
     iv = [
         iv.split(":")[0],
@@ -280,6 +310,7 @@ def parseIv(iv):
         int(iv.split(":")[1].split("-")[1])
     ]
     return iv
+
 
 def loops2washU(fin, fout, logger, significant=1):
     """
@@ -290,7 +321,7 @@ def loops2washU(fin, fout, logger, significant=1):
     @param significant: if set 1, only convert significant loops.
     """
     logger.info("Converting %s to washU long range interaction track." % fin)
-    ss = {'0':'minus', '1':'plus', '-':'minus', '+':'plus'}
+    ss = {'0': 'minus', '1': 'plus', '-': 'minus', '+': 'plus'}
     filehandles = {}
     for i, line in enumerate(open(fin)):
         if i == 0:
@@ -305,7 +336,8 @@ def loops2washU(fin, fout, logger, significant=1):
         strand_key = map(lambda x: ss[x], key[2:])
         if tuple(strand_key) not in filehandles:
             suffix_str = '_'.join([''] + strand_key)
-            filehandles[tuple(strand_key)] = open(fout + suffix_str + '_loops_washU.txt', 'w')
+            filehandles[tuple(strand_key)] = open(
+                fout + suffix_str + '_loops_washU.txt', 'w')
         f = filehandles[tuple(strand_key)]
 
         #iva,ivb,ES
@@ -328,7 +360,6 @@ def loops2washU(fin, fout, logger, significant=1):
         "Converting %s to washU long range interaction track finished." % fin)
 
 
-
 def loops2juice(fin, fout, logger, significant=1):
     """
     Convert interaction level loop file to Juicebox 2D annotation features. 
@@ -345,7 +376,7 @@ def loops2juice(fin, fout, logger, significant=1):
         "-log10(binomial_p-value)", "-log10(poisson_p-value)",
         "-log10(hypergeometric_p-value)"
     ]
-    ss = {'0':'minus', '1':'plus', '-':'minus', '+':'plus'}
+    ss = {'0': 'minus', '1': 'plus', '-': 'minus', '+': 'plus'}
     filehandles = {}
     for i, line in enumerate(open(fin)):
         if i == 0:
@@ -360,7 +391,8 @@ def loops2juice(fin, fout, logger, significant=1):
         strand_key = map(lambda x: ss[x], key[2:])
         if tuple(strand_key) not in filehandles:
             suffix_str = '_'.join([''] + strand_key)
-            filehandles[tuple(strand_key)] = open(fout + suffix_str + '_loops_juicebox.txt', 'w')
+            filehandles[tuple(strand_key)] = open(
+                fout + suffix_str + '_loops_juicebox.txt', 'w')
             f = filehandles[tuple(strand_key)]
             f.write("\t".join(headerline) + "\n")
         else:
@@ -377,10 +409,10 @@ def loops2juice(fin, fout, logger, significant=1):
             color = '"0,0,255"'
         try:
             nline = [
-                iva[0], iva[1], iva[2], ivb[0], ivb[1], ivb[2],
-                color, line[10], line[0], line[2], line[1],
-                line[4], -np.log10(float(line[3])),
-                -np.log10(float(line[8])), -np.log10(float(line[5]))
+                iva[0], iva[1], iva[2], ivb[0], ivb[1], ivb[2], color,
+                line[10], line[0], line[2], line[1], line[4],
+                -np.log10(float(line[3])), -np.log10(float(line[8])),
+                -np.log10(float(line[5]))
             ]
         except:
             continue
@@ -389,6 +421,7 @@ def loops2juice(fin, fout, logger, significant=1):
         f.close()
     logger.info(
         "Converting %s to Juicebox 2D annotation feature finished." % fin)
+
 
 def strips2juice(fin, fout, logger, significant=1):
     """
@@ -417,7 +450,7 @@ def strips2juice(fin, fout, logger, significant=1):
         "-log10(binomal_p-value)",
         "-log10(poisson_p-value)",
     ]
-    ss = {'0':'minus', '1':'plus', '-':'minus', '+':'plus'}
+    ss = {'0': 'minus', '1': 'plus', '-': 'minus', '+': 'plus'}
     filehandles = {}
     for i, line in enumerate(open(fin)):
         if i == 0:
@@ -431,7 +464,8 @@ def strips2juice(fin, fout, logger, significant=1):
         strand_key = map(lambda x: ss[x], key[2:])
         if tuple(strand_key) not in filehandles:
             suffix_str = '_'.join([''] + strand_key)
-            filehandles[tuple(strand_key)] = open(fout + suffix_str + '_juicebox.txt', 'w')
+            filehandles[tuple(strand_key)] = open(
+                fout + suffix_str + '_juicebox.txt', 'w')
             f = filehandles[tuple(strand_key)]
             f.write("\t".join(headerline) + "\n")
         else:
@@ -462,6 +496,7 @@ def strips2juice(fin, fout, logger, significant=1):
     logger.info(
         "Converting %s to Juicebox 2D annotation feature finished." % fin)
 
+
 def pet2washU(fin, fout, cut, ext, strict_intra=True):
     """
     Convert PETs to washU long range interactions. 
@@ -480,7 +515,7 @@ def pet2washU(fin, fout, cut, ext, strict_intra=True):
     h5pet_group = h5fh['pets']
     filehandles = {}
     suffix = []
-    ss = {'0':'minus', '1':'plus', '-':'minus', '+':'plus'}
+    ss = {'0': 'minus', '1': 'plus', '-': 'minus', '+': 'plus'}
     for petclass in h5pet_group.keys():
         print "converting %s" % petclass
         mat = h5pet_group[petclass][:]
@@ -552,7 +587,7 @@ def pet2hic(fin, fout, cut, org, strict_intra=True):
     h5pet_group = h5fh['pets']
     filehandles = {}
     suffix = []
-    ss = {'0':'minus', '1':'plus', '-':'minus', '+':'plus'}
+    ss = {'0': 'minus', '1': 'plus', '-': 'minus', '+': 'plus'}
     for petclass in h5pet_group.keys():
         print "converting %s" % petclass
         mat = h5pet_group[petclass][:]
@@ -576,7 +611,8 @@ def pet2hic(fin, fout, cut, org, strict_intra=True):
                 for direction in ['forward', 'backward']:
                     suffix_str = '_'.join([''] + strand_key + [direction])
                     suffix.append(suffix_str)
-                    filehandles[tuple(strand_key + [direction])] = open(tmp + suffix_str, 'w')
+                    filehandles[tuple(strand_key + [direction])] = open(
+                        tmp + suffix_str, 'w')
             f_forward = filehandles[tuple(strand_key + ['forward'])]
             f_backward = filehandles[tuple(strand_key + ['backward'])]
             if key[0] == key[1]:

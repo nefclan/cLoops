@@ -20,17 +20,27 @@ from cLoops.cDBSCAN import cDBSCAN as DBSCAN
 from cLoops.ests import estFragSize, estIntSelCutFrag
 from cLoops.cPlots import plotIntSelCutFrag
 
-def singleDBSCAN(petfile, petclass, eps, minPts, logfilename, cut=0,
-                 strict_intra=True, anchorRatio=1):
+
+def singleDBSCAN(petfile,
+                 petclass,
+                 eps,
+                 minPts,
+                 logfile_name,
+                 cut=0,
+                 strict_intra=True,
+                 anchor_ratio=1):
+                 anchor_ratio=1):
     """
     Run DBSCAN to detect interactions for one chromosome.
     mat is list, every item is [ pointId,x,y ]
-    @para anchorRatio: Loop anchors width ratio for assymmetric data
+    @para anchor_ratio: Loop anchors width ratio for assymmetric data
+    @para anchor_ratio: Loop anchors width ratio for assymmetric data
     """
-    logger = getLogger(logfilename)
+    logger = getLogger(logfile_name)
     dataI, readI, dataS, readS, dis, dss = [], [], [], [], [], []
     #put off distance filter
-    key, mat, intra_flag = readPets(petfile, petclass, cut=0, strict_intra=strict_intra)
+    key, mat, intra_flag = readPets(
+        petfile, petclass, cut=0, strict_intra=strict_intra)
     #self-ligation could only happen in intra pet class
     if intra_flag and cut > 0:
         d = abs(mat[:, 2] - mat[:, 1])
@@ -39,21 +49,29 @@ def singleDBSCAN(petfile, petclass, eps, minPts, logfilename, cut=0,
     if len(mat) == 0:
         return key, petclass, dataI, dataS, list(dis), list(dss)
     #data for interaction records, read for readId
-    report = "Clustering %s using eps as %s, minPts as %s, pre-set distance cutoff as > %s" % (petclass, eps, minPts, cut)
+    report = "Clustering %s using eps as %s, minPts as %s, pre-set distance cutoff as > %s" % (
+        petclass, eps, minPts, cut)
     logger.info(report)
-    anchorRatio = Fraction(anchorRatio)
+    anchor_ratio = Fraction(anchor_ratio)
+    anchor_ratio = Fraction(anchor_ratio)
     coor_factor = [1, 1]
-    if anchorRatio > 1:
-        anchorRatio = anchorRatio.limit_denominator(1000)
-        coor_factor = [anchorRatio.denominator, anchorRatio.numerator]
+    if anchor_ratio > 1:
+    if anchor_ratio > 1:
+        anchor_ratio = anchor_ratio.limit_denominator(1000)
+        anchor_ratio = anchor_ratio.limit_denominator(1000)
+        coor_factor = [anchor_ratio.denominator, anchor_ratio.numerator]
+        coor_factor = [anchor_ratio.denominator, anchor_ratio.numerator]
         mat[:, 1:3] = mat[:, 1:3] * coor_factor
         eps = eps * max(coor_factor)
-    elif anchorRatio < 1:
-        anchorRatio = (1 / anchorRatio).limit_denominator(1000)
-        coor_factor = [anchorRatio.numerator, anchorRatio.denominator]
+    elif anchor_ratio < 1:
+    elif anchor_ratio < 1:
+        anchor_ratio = (1 / anchor_ratio).limit_denominator(1000)
+        anchor_ratio = (1 / anchor_ratio).limit_denominator(1000)
+        coor_factor = [anchor_ratio.numerator, anchor_ratio.denominator]
+        coor_factor = [anchor_ratio.numerator, anchor_ratio.denominator]
         mat[:, 1:3] = mat[:, 1:3] * coor_factor
         eps = eps * max(coor_factor)
-    db = DBSCAN(mat, eps , minPts)
+    db = DBSCAN(mat, eps, minPts)
     labels = pd.Series(db.labels)
     #mat = np.array(mat)
     mat = pd.DataFrame(
@@ -97,14 +115,23 @@ def singleDBSCAN(petfile, petclass, eps, minPts, logfilename, cut=0,
     return key, petclass, dataI, dataS, list(dis), list(dss)
 
 
-def runDBSCAN(petfile, totalpetclass, eps, minPts, logfilename, cut=0, cpu=1,
-              strict_intra=True, anchorRatio=1):
+def runDBSCAN(petfile,
+              total_petclass,
+              eps,
+              minPts,
+              logfile_name,
+              cut=0,
+              cpu=1,
+              strict_intra=True,
+              anchor_ratio=1):
+              anchor_ratio=1):
     """
     Run DBSCAN to detect interactions for all chromosomes.
     """
-    ds = Parallel(n_jobs=cpu)(delayed(singleDBSCAN)(petfile, petclass, eps, minPts,
-                                    logfilename, cut, strict_intra, anchorRatio)
-                                    for petclass in totalpetclass)
+    ds = Parallel(n_jobs=cpu)(delayed(
+        singleDBSCAN)(petfile, petclass, eps, minPts, logfile_name, cut,
+                      strict_intra, anchor_ratio) for petclass in total_petclass)
+                      strict_intra, anchor_ratio) for petclass in total_petclass)
     dataI, dataS, dis, dss = {}, [], [], []
     for d in ds:
         if len(d[2]) == 0:
@@ -114,6 +141,7 @@ def runDBSCAN(petfile, totalpetclass, eps, minPts, logfilename, cut=0, cpu=1,
         dis.extend(d[4])
         dss.extend(d[5])
     return dataI, dataS, dis, dss
+
 
 def checkSameLoop(ra, rb):
     """
@@ -146,6 +174,7 @@ def combineTwice(dataI, dataI_2):
                     dataI[key]["records"].append(ra)
     return dataI
 
+
 def filterClusterByDis(data, cut, strict_intra=True):
     """
     Filter cis inter-ligation clusters by distances
@@ -161,11 +190,22 @@ def filterClusterByDis(data, cut, strict_intra=True):
         data[key]["records"] = nr
     return data
 
-def callLoops(petfile, fout, totalpetclass, eps,
-              minPts, cut=0, strict_intra=True, 
-              symmetrical=True, anchorRatio=1,
-              logfilename='', plot=0, cpu=1, ds=[]):
-    logger = getLogger(logfilename)
+
+def callLoops(petfile,
+              fout,
+              total_petclass,
+              eps,
+              minPts,
+              cut=0,
+              strict_intra=True,
+              symmetrical=True,
+              anchor_ratio=1,
+              anchor_ratio=1,
+              logfile_name='',
+              plot=0,
+              cpu=1,
+              ds=[]):
+    logger = getLogger(logfile_name)
     #3. run the DBSCAN
     if eps == 0:
         #3.0. run the DBSCAN only one time
@@ -180,8 +220,10 @@ def callLoops(petfile, fout, totalpetclass, eps,
     for ep in eps:
         #multiple minPts, for minPts like 50,40,30,20, the bigger minPts always get smaller distance cutoff
         for m in minPts:
-            dataI_2, dataS_2, dis_2, dss_2 = runDBSCAN(petfile, totalpetclass, ep, m, logfilename, cut,
-                                                       cpu, strict_intra, anchorRatio)
+            dataI_2, dataS_2, dis_2, dss_2 = runDBSCAN(
+                petfile, total_petclass, ep, m, logfile_name, cut, cpu,
+                strict_intra, anchor_ratio)
+                strict_intra, anchor_ratio)
             if len(dataI_2) == 0:
                 logger.info(
                     "ERROR: no inter-ligation PETs or self-ligation PETs detected for eps %s minPts %s, can't model the distance cutoff,continue anyway"
@@ -200,15 +242,14 @@ def callLoops(petfile, fout, totalpetclass, eps,
                 % (cut_2, ep, m))
             #experimental
             cuts.append(cut_2)
-            #cut = max(cuts) 
+            #cut = max(cuts)
             cut = cut_2
             dataI_2 = filterClusterByDis(dataI_2, cut, strict_intra)
             dataI = combineTwice(dataI, dataI_2)
-    cuts = [ c for c in cuts if c > 0]
+    cuts = [c for c in cuts if c > 0]
     if len(cuts) > 0:
         cut = np.min(cuts)
     else:
         cut = 0
     #cut = np.max(cuts)
     return dataI, cut
-

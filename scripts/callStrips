@@ -32,8 +32,7 @@ from cLoops.utils import EPILOG
 global logger
 
 
-def singleStripDBSCAN(petfile, petclass, eps, minPts,
-                 extx=1, exty=1):
+def singleStripDBSCAN(petfile, petclass, eps, minPts, extx=1, exty=1):
     """
     Run DBSCAN to detect strips for one chromosome.
     """
@@ -42,11 +41,12 @@ def singleStripDBSCAN(petfile, petclass, eps, minPts,
     if len(mat) == 0:
         return key, dataI
     #data for interaction records, read for readId
-    report = "Clustering %s using eps as %s, minPts as %s" % (petclass, eps, minPts)
+    report = "Clustering %s using eps as %s, minPts as %s" % (petclass, eps,
+                                                              minPts)
     logger.info(report)
     mat[:, 1] = mat[:, 1] * extx
     mat[:, 2] = mat[:, 2] * exty
-#modification: I use this to ensure users won't mix eps settings, I dunno whether this is good
+    #modification: I use this to ensure users won't mix eps settings, I dunno whether this is good
     #eps = eps * max(extx, exty)
     db = DBSCAN(mat, eps, minPts)
     labels = pd.Series(db.labels)
@@ -64,7 +64,7 @@ def singleStripDBSCAN(petfile, petclass, eps, minPts,
             key[1],
             int(np.min(sub["Y"]) / exty),
             int(np.max(sub["Y"]) / exty),
-#modification: what this used for?
+            #modification: what this used for?
             sub.shape[0],
         ]
         r += key[2:4]
@@ -88,17 +88,19 @@ def filterCandidateStripes(rs, pets=200, lengthFoldDiff=20):
         rs[key] = nds
     return rs
 
-def callStripes(fin,
-                fout,
-                eps=20000,
-                minPts=5,
-                pets=200,
-                anchorRatio=50,
-                lengthFoldDiff=50,
-                chroms=[],
-                juice=False,
-                cpus=1,
-                ):
+
+def callStripes(
+        fin,
+        fout,
+        eps=20000,
+        minPts=5,
+        pets=200,
+        anchorRatio=50,
+        lengthFoldDiff=50,
+        chroms=[],
+        juice=False,
+        cpus=1,
+):
     """
     Calling stripes with variant of cDBSCAN.
     """
@@ -118,11 +120,13 @@ def callStripes(fin,
     #2. run parallelly variant of cDBSCAN to find candidate stripes
     #2.1 x, horizontal stripes
     ds_x = Parallel(n_jobs=cpus)(delayed(singleStripDBSCAN)(
-        fin, records[key]['petclass'], eps, minPts, extx=anchorRatio) for key in records.keys())
+        fin, records[key]['petclass'], eps, minPts, extx=anchorRatio)
+                                 for key in records.keys())
     ds_x = dict(zip([d[0] for d in ds_x], [d[1] for d in ds_x]))
     #2.2 y, vertical stripes
     ds_y = Parallel(n_jobs=cpus)(delayed(singleStripDBSCAN)(
-        fin, records[key]['petclass'], eps, minPts, exty=anchorRatio) for key in records.keys())
+        fin, records[key]['petclass'], eps, minPts, exty=anchorRatio)
+                                 for key in records.keys())
     ds_y = dict(zip([d[0] for d in ds_y], [d[1] for d in ds_y]))
     #3.1 filtering candidate stripes by requring pets and length difference for x and y, horizontal stripes
     ds_x = filterCandidateStripes(
@@ -131,14 +135,12 @@ def callStripes(fin,
     ds_y = filterCandidateStripes(
         ds_y, pets=pets, lengthFoldDiff=lengthFoldDiff)
     #4.1 estimating the significance for horizontal stripes
-    ds_x = Parallel(n_jobs=cpus)(delayed(getStripSig)(fin, '_'.join(key),
-                                                       ds_x[key])
-                                 for key in ds_x.keys())
+    ds_x = Parallel(n_jobs=cpus)(delayed(getStripSig)(fin, '_'.join(key), ds_x[
+        key]) for key in ds_x.keys())
     ds_x = pd.concat(ds_x)
     #4.2 estimating the significance for verical stripes
-    ds_y = Parallel(n_jobs=cpus)(delayed(getStripSig)(fin, '_'.join(key),
-                                                       ds_y[key])
-                                 for key in ds_y.keys())
+    ds_y = Parallel(n_jobs=cpus)(delayed(getStripSig)(fin, '_'.join(key), ds_y[
+        key]) for key in ds_y.keys())
     ds_y = pd.concat(ds_y)
     #5. marking the significant stripes
     ds_x = markStripSig(ds_x)
@@ -149,12 +151,10 @@ def callStripes(fin,
     ds_y.to_csv(fout + "_y_vertical.stripe", sep="\t", index_label="stripeId")
     #7. convert to juicebox annotation
     if juice:
-        strips2juice(fout + "_x_horizontal.stripe",
-                     fout + "_x_horizontal", logger, 1)
-        strips2juice(fout + "_y_vertical.stripe",
-                     fout + "_y_vertical", logger, 1)
-
-
+        strips2juice(fout + "_x_horizontal.stripe", fout + "_x_horizontal",
+                     logger, 1)
+        strips2juice(fout + "_y_vertical.stripe", fout + "_y_vertical", logger,
+                     1)
 
 
 if __name__ == "__main__":
@@ -164,8 +164,8 @@ if __name__ == "__main__":
     logger = getLogger(fn)
     op = callStripsHelp()
     report = "Command line: callStripes -i {} -o {} -eps {} -minPts {} -pets {} -ar {} -c {} -p {} -j {}".format(
-        op.input, op.output, op.eps, op.minPts, op.pets, op.anchorRatio, op.chroms, op.cpu,
-        op.juice)
+        op.input, op.output, op.eps, op.minPts, op.pets, op.anchorRatio,
+        op.chroms, op.cpu, op.juice)
     logger.info(report)
     if op.chroms == '':
         chroms = []

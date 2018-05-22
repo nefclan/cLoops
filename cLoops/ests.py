@@ -56,7 +56,7 @@ def estIntSelCutFrag(di, ds, log=1):
     cut2 = (ds.mean() * ds.std() + di.mean() * di.std()) / (
         ds.std() + di.std())
     cut = min([cut1, cut2])
-    rcut = int(2 ** cut)
+    rcut = int(2**cut)
     #fragment size
     frags = np.median(ds)
     rfrags = int(2**frags)

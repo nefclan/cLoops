@@ -2,27 +2,12 @@
 #--coding:utf-8 --
 """
 pipe.py
-2017-03-22: finished basically
-2017-06-26: runsecond model refined
-2017-06-27: modified runsecond model, as extend the second time result
-2017-06-30: modified the combining method
-2017-07-20: modifed some output.
-2017-07-28: modified overlaps, change to the samll one.
-2017-08-03: re-deisgn the underlying data structure, improve the speed as 2 fold and reduce the memory as 1/2
-2017-08-07: modified pipeline, as accecpt multiple eps.
-2017-08-10: to do, re-design data structure as using HDF5 as botoom structure to reduce memory usage
-2017-08-18: changed combine method for loops when runing a series of eps.
-2018-03-13: modified combining method for multiple eps
-2018-03-18: modified pre-processing bedpe files.
-2018-03-27: modifed merging clustering by remove close PETs
-2018-03-30: multiple minPts mode added
-2018-03-31: modified self-ligation and inter-ligation distance cutoff selection.
 """
 
-__author__ = "CAO Yaqiang"
+__author__ = "CAO Yaqiang;CHEN Zhaoxiong"
 __date__ = ""
 __modified__ = ""
-__email__ = "caoyaqiang0410@gmail.com"
+__email__ = "caoyaqiang0410@gmail.com;chenzhaoxiong@picb.ac.cn"
 
 #python library
 import os, time, sys, shutil, gzip, copy

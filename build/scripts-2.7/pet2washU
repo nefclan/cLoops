@@ -1,0 +1,26 @@
+#!/data1/caoyaqiang/cLoops2/czx/testcLoops2/bin/python
+#--coding:utf-8 --
+"""
+pet2washU
+2017-08-10
+"""
+__date__ = "2017-08-10"
+__modified__ = ""
+__email__ = "caoyaqiang@picb.ac.cn chenxingwei@picb.ac.cn"
+
+#general library
+import os
+from glob import glob
+
+#3rd library
+import numpy as np
+import joblib
+
+#cLoops
+from cLoops.io import pet2washU
+from cLoops.utils import pet2washUHelp
+
+if __name__ == "__main__":
+    op = pet2washUHelp()
+    pet2washU(op.input, op.output + "_PETs_washU.txt", op.cut, op.ext,
+              op.strict_intra_flag)

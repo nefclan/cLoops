@@ -1,0 +1,187 @@
+#!/data1/caoyaqiang/cLoops2/czx/testcLoops2/bin/python
+#--coding:utf-8 --
+"""
+stripe.py
+2018-05-04
+"""
+
+__author__ = "CAO Yaqiang"
+__date__ = ""
+__modified__ = ""
+__email__ = "caoyaqiang0410@gmail.com"
+
+#python library
+import os, time, sys
+from datetime import datetime
+
+#3rd library
+import numpy as np
+import pandas as pd
+import h5py
+from joblib import Parallel, delayed
+
+#cLoops
+from cLoops.settings import *
+from cLoops.utils import getLogger, callSys, cFlush, callStripesHelp
+from cLoops.io import readPets, stripes2juice
+from cLoops.cDBSCAN import cDBSCAN as DBSCAN
+from cLoops.cModel import getStripeSig, markStripeSig
+
+#global settings
+from cLoops.utils import EPILOG
+global logger
+
+
+def singleStripeDBSCAN(petfile, petclass, eps, minPts, extx=1, exty=1):
+    """
+    Run DBSCAN to detect stripes for one chromosome.
+    """
+    key, mat, intra_flag = readPets(petfile, petclass)
+    dataI = []
+    if len(mat) == 0:
+        return key, dataI
+    #data for interaction records, read for readId
+    report = "Clustering %s using eps as %s, minPts as %s" % (petclass, eps,
+                                                              minPts)
+    logger.info(report)
+    mat[:, 1] = mat[:, 1] * extx
+    mat[:, 2] = mat[:, 2] * exty
+    #modification: I use this to ensure users won't mix eps settings, I dunno whether this is good
+    #eps = eps * max(extx, exty)
+    db = DBSCAN(mat, eps, minPts)
+    labels = pd.Series(db.labels)
+    mat = pd.DataFrame(
+        mat[:, 1:].astype("float"), index=mat[:, 0], columns=["X", "Y"])
+    nlabels = set(labels.values)
+    #collect clusters
+    for label in nlabels:
+        los = list(labels[labels == label].index)
+        sub = mat.loc[los, :]
+        r = [
+            key[0],
+            int(np.min(sub["X"]) / extx),
+            int(np.max(sub["X"]) / extx),
+            key[1],
+            int(np.min(sub["Y"]) / exty),
+            int(np.max(sub["Y"]) / exty),
+            #modification: what this used for?
+            sub.shape[0],
+        ]
+        r += key[2:4]
+        dataI.append(r)
+    report = "Clustering %s finished." % petclass
+    logger.info(report)
+    return key, dataI
+
+
+def filterCandidateStripes(rs, pets=200, lengthFoldDiff=20):
+    for key in rs.keys():
+        nds = []
+        for r in rs[key]:
+            if r[6] < pets:
+                continue
+            xlen = r[2] - r[1]
+            ylen = r[5] - r[4]
+            if (xlen / ylen > lengthFoldDiff) or (ylen / xlen >
+                                                  lengthFoldDiff):
+                nds.append(r)
+        rs[key] = nds
+    return rs
+
+
+def callStripes(
+        fin,
+        fout,
+        eps=20000,
+        minPts=5,
+        pets=200,
+        anchorRatio=50,
+        lengthFoldDiff=50,
+        chroms=[],
+        juice=False,
+        cpus=1,
+):
+    """
+    Calling stripes with variant of cDBSCAN.
+    """
+    #1. parepare all required .jd files
+    records = {}
+    h5fh = h5py.File(fin, 'r')
+    h5pet_group = h5fh['pets'].keys()
+    h5fh.close()
+    for petclass in h5pet_group:
+        key = petclass.split("_")
+        if len(chroms) > 0 and not (key[0] in chroms or key[1] in chroms):
+            continue
+        records[tuple(key)] = {'petclass': petclass}
+    if len(h5pet_group) < 1:
+        logger.error("no pet found")
+        return
+    #2. run parallelly variant of cDBSCAN to find candidate stripes
+    #2.1 x, horizontal stripes
+    ds_x = Parallel(n_jobs=cpus)(delayed(singleStripeDBSCAN)(
+        fin, records[key]['petclass'], eps, minPts, extx=anchorRatio)
+                                 for key in records.keys())
+    ds_x = dict(zip([d[0] for d in ds_x], [d[1] for d in ds_x]))
+    #2.2 y, vertical stripes
+    ds_y = Parallel(n_jobs=cpus)(delayed(singleStripeDBSCAN)(
+        fin, records[key]['petclass'], eps, minPts, exty=anchorRatio)
+                                 for key in records.keys())
+    ds_y = dict(zip([d[0] for d in ds_y], [d[1] for d in ds_y]))
+    #3.1 filtering candidate stripes by requring pets and length difference for x and y, horizontal stripes
+    ds_x = filterCandidateStripes(
+        ds_x, pets=pets, lengthFoldDiff=lengthFoldDiff)
+    #3.2 filtering horizontal stripes
+    ds_y = filterCandidateStripes(
+        ds_y, pets=pets, lengthFoldDiff=lengthFoldDiff)
+    #4.1 estimating the significance for horizontal stripes
+    ds_x = Parallel(n_jobs=cpus)(delayed(getStripeSig)(fin, '_'.join(key), ds_x[
+        key]) for key in ds_x.keys())
+    ds_x = pd.concat(ds_x)
+    #4.2 estimating the significance for verical stripes
+    ds_y = Parallel(n_jobs=cpus)(delayed(getStripeSig)(fin, '_'.join(key), ds_y[
+        key]) for key in ds_y.keys())
+    ds_y = pd.concat(ds_y)
+    #5. marking the significant stripes
+    ds_x = markStripeSig(ds_x)
+    ds_y = markStripeSig(ds_y)
+    #6. saveing called stripes
+    ds_x.to_csv(
+        fout + "_x_horizontal.stripe", sep="\t", index_label="stripeId")
+    ds_y.to_csv(fout + "_y_vertical.stripe", sep="\t", index_label="stripeId")
+    #7. convert to juicebox annotation
+    if juice:
+        stripes2juice(fout + "_x_horizontal.stripe", fout + "_x_horizontal",
+                     logger, 1)
+        stripes2juice(fout + "_y_vertical.stripe", fout + "_y_vertical", logger,
+                     1)
+
+
+if __name__ == "__main__":
+    start = datetime.now()
+    global logger
+    fn = os.path.join(os.getcwd(), "callStripes.log")
+    logger = getLogger(fn)
+    op = callStripesHelp()
+    report = "Command line: callStripes -i {} -o {} -eps {} -minPts {} -pets {} -ar {} -c {} -p {} -j {}".format(
+        op.input, op.output, op.eps, op.minPts, op.pets, op.anchorRatio,
+        op.chroms, op.cpu, op.juice)
+    logger.info(report)
+    if op.chroms == '':
+        chroms = []
+    else:
+        chroms = op.chroms.split(",")
+    callStripes(
+        op.input,
+        op.output,
+        eps=op.eps,
+        minPts=op.minPts,
+        pets=op.pets,
+        anchorRatio=op.anchorRatio,
+        lengthFoldDiff=op.lengthFoldDiff,
+        chroms=chroms,
+        juice=op.juice,
+        cpus=op.cpu)
+    usedtime = datetime.now() - start
+    r = "callStripes finished. Bye! Used time:%s" % usedtime
+    logger.info(r)

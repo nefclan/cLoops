@@ -3,7 +3,6 @@ setup.py
 cLoops/__init__.py
 cLoops/bk.py
 cLoops/cDBSCAN.py
-cLoops/cDBSCAN2.py
 cLoops/cModel.py
 cLoops/cPlots.py
 cLoops/callLoops.py
@@ -18,7 +17,7 @@ cLoops.egg-info/SOURCES.txt
 cLoops.egg-info/dependency_links.txt
 cLoops.egg-info/entry_points.txt
 cLoops.egg-info/top_level.txt
-scripts/callStrips
+scripts/callStripes
 scripts/pet2fingerprint
 scripts/pet2juice
 scripts/pet2washU

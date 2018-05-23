@@ -24,6 +24,6 @@ setup(name='cLoops',
                 ],
         },
     #temply disable deLoops for furthur development
-    scripts = ["scripts/callStrips","scripts/pet2fingerprint","scripts/pet2juice","scripts/pet2washU"],
+    scripts = ["scripts/callStripes","scripts/pet2fingerprint","scripts/pet2juice","scripts/pet2washU"],
 
     )

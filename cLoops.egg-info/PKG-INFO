@@ -6,7 +6,6 @@ Home-page: https://github.com/nefclan/cLoops
 Author: Yaqiang Cao
 Author-email: caoyaqiang@picb.ac.cn
 License: UNKNOWN
-Description-Content-Type: UNKNOWN
 Description: # cLoops: loops calling for ChIA-PET, Hi-C and HiChIP
         ![](https://github.com/YaqiangCao/cLoops/raw/master/pngs/cLoops.png)
         
@@ -131,7 +130,7 @@ Description: # cLoops: loops calling for ChIA-PET, Hi-C and HiChIP
         
         ### 5. call stripes
         Since v0.91 (2018-05-17 release), we introduce a new script callStripe, which can identify stripes (a structure defined in [***The Energetics and Physiological Impact of Cohesin Extrusion***](https://www.cell.com/cell/abstract/S0092-8674(18)30404-5)). However, the original paper hasn't released their data, so we demonstrate the the result using H3K27ac HiChIP data in K562, which from the heatmap we can observe a lot of similar stripes.
-        We provided the H3K27ac HiChIP data in K562 chr21 for testing. Parameters tuning maybe needed for other data, please email caoyaqiang0410@gmail.com for tuning parameters for your data. 
+        We provided the H3K27ac HiChIP data in K562 chr21 for testing. Parameters tuning maybe needed for other data, please email caoyaqiang0410@gmail.com or chenzhaoxiong@picb.ac.cn for tuning parameters for your data. 
         ```
         wget https://github.com/YaqiangCao/cLoops_supplementaryData/blob/master/examples/GSE101498_K562_HiChIP_H3K27ac_rep1.bedpe.gz
         wget https://github.com/YaqiangCao/cLoops_supplementaryData/blob/master/examples/GSE101498_K562_HiChIP_H3K27ac_rep2.bedpe.gz
